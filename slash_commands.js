@@ -1,12 +1,20 @@
 import { generalErrorEmbed, getQueryHelpMessage, noSuchCardEmbed, defaultEmbed, imageEmbed, pricesEmbed, rulingsEmbed } from './embeds.js';
 
 const OPTION_NAME = 'cardname';
+const USER_EPHEMERAL_NAME = 'cardname';
 
 const OPTION = {
       type: 3,
       name: OPTION_NAME,
       description: 'The name of the Sorcery card.',
       required: true,
+};
+
+const USER_EPHEMERAL = {
+    type: 5,
+    name: USER_EPHEMERAL_NAME,
+    description: 'Show to everyone in this channel',
+    required: false,
 };
 
 const Command = Object.freeze({
@@ -25,22 +33,22 @@ export const COMMANDS = [
     {
         name: Command.INFO,
         description: 'Replies with general card details.',
-        options: [OPTION],
+        options: [OPTION, USER_EPHEMERAL],
     },
     {
         name: Command.IMAGE,
         description: 'Replies with a large card image.',
-        options: [OPTION],
+        options: [OPTION, USER_EPHEMERAL],
     },
     {
         name: Command.FAQ,
         description: 'Replies with card FAQs.',
-        options: [OPTION],
+        options: [OPTION, USER_EPHEMERAL],
     },
     {
         name: Command.PRICE,
         description: 'Replies with card prices.',
-        options: [OPTION],
+        options: [OPTION, USER_EPHEMERAL],
     },
 ];
 
@@ -50,7 +58,7 @@ export function commandHandler(fuzzySearch, api, analytics) {
 
         const commandName = interaction.commandName;
         const query = interaction.options.getString(OPTION_NAME);
-        const isPublicMessage = interaction.guild !== null;
+        const isPublicMessage = interaction.guild !== null || interaction.options.getBool(USER_EPHEMERAL_NAME);
 
         analytics.logCommand(commandName, { query: query, ephemeral: isPublicMessage });
 
